@@ -1,0 +1,31 @@
+---
+galaxy_info:
+  role_name: oxidized
+
+  author: Lucas Maurice (Sonic)
+  description: This role deploy Oxidized on docker.
+  company: djls
+
+  license: WTFPL
+
+  min_ansible_version: 1.9
+
+  platforms:
+    - name: Debian
+      versions:
+        - 10
+    - name: CentOS
+      versions:
+        - 8
+    - name: Ubuntu
+      versions:
+        - 18.04
+
+  galaxy_tags:
+    - networking
+    - oxidized
+    - backup
+  
+  dependencies:
+    - geerlingguy.pip
+    - geerlingguy.docker
