@@ -1,0 +1,59 @@
+---
+resolve_dns: {{ OXIDIZED_RESOLVE_DNS }}
+interval: {{ OXIDIZED_INTERVAL }}
+use_syslog: {{ OXIDIZED_USE_SYSLOG }}
+threads: {{ OXIDIZED_THREADS }}
+timeout: {{ OXIDIZED_TIMEOUT }}
+retries: {{ OXIDIZED_RETRIES }}
+prompt: {{ OXIDIZED_PROMPT }}
+rest: {{ OXIDIZED_LISTEN_IF }}:{{ OXIDIZED_LISTEN_PORT }}
+next_adds_job: {{ OXIDIZED_NEXT_ADDS_JOB }}
+
+# Hide secrets
+rest_hide_enable: {{ OXIDIZED_HIDE_SECRETS }}
+vars: 
+  remove_secret: {{ OXIDIZED_HIDE_SECRETS }}
+
+# Input settings
+input:
+  default: ssh
+  ssh:
+    secure: {{ OXIDIZED_SECURE_SSH }}
+  utf8_encoded: true
+
+# Device database
+source:
+  default: csv
+  csv:
+    file: {{ OXIDIZED_CONTAINER_CONFIG_PATH }}/equipments.csv
+    delimiter: !ruby/regexp /,/
+    map:
+      name: 0
+      ip: 1
+      model: 2
+      username: 3
+      password: 4
+    gpg: false
+
+# Output settings
+output:
+  default: git
+  git:
+    user: {{ OXIDIZED_GIT_USER }}
+    email: {{ OXIDIZED_GIT_EMAIL }}
+    repo: {{ OXIDIZED_CONTAINER_CONFIG_PATH }}/repo
+
+# Hooks to execute on changes
+hooks:
+  push_to_remote:
+    type: githubrepo
+    events: [post_store]
+    remote_repo: {{ OXIDIZED_GIT_REMOTE_REPO }}
+    publickey: {{ OXIDIZED_CONTAINER_CONFIG_PATH }}/id_git.pub
+    privatekey: {{ OXIDIZED_CONTAINER_CONFIG_PATH }}/id_git
+  slack:
+    type: slackdiff
+    events: [post_store]
+    token: {{ OXIDIZED_SLACK_TOKEN }}
+    channel: "{{ OXIDIZED_SLACK_CHANNEL }}"
+    message: "%{node} config updated! {{ OXIDIZED_SLACK_COMMIT_URL }}%{commitref}"
