@@ -25,7 +25,7 @@ galaxy_info:
     - networking
     - oxidized
     - backup
-  
+
   dependencies:
     - geerlingguy.pip
     - geerlingguy.docker

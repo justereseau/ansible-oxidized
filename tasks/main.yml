@@ -65,7 +65,7 @@
     dest: "{{ OXIDIZED_GIT_LOCAL_REPO }}"
     key_file: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PRIVATE_KEY_FILE }}"
     repo: "{{ OXIDIZED_GIT_REMOTE_REPO }}"
-    update: no
+    update: false
     accept_hostkey: true
 
 - name: "Create the oxidized container."
