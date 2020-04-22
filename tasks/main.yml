@@ -1,1 +1,89 @@
 ---
+- name: Create Oxidized group
+  group:
+    name: oxidized
+    state: present
+
+- name: Create Oxidized user
+  user:
+    comment: Oxidized user
+    name: oxidized
+    group: oxidized
+    shell: /sbin/nologin
+    create_home: false
+    state: present
+
+- name: Create needed directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: oxidized
+    group: oxidized
+    mode: u=rwx,g=rx,o=
+  loop:
+    - "{{ OXIDIZED_CONFIG_PATH }}"
+    - "{{ OXIDIZED_IMPORT_MODEL_PATH }}"
+    - "{{ OXIDIZED_GIT_LOCAL_REPO }}"
+
+- name: copy config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    owner: oxidized
+    group: oxidized
+    mode: u=rwx,g=rx,o=
+  loop:
+    - src: "{{ OXIDIZED_CONFIG_TEMPLATE }}"
+      dst: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_CONFIG_FILE }}"
+    - src: "{{ OXIDIZED_DB_TEMPLATE }}"
+      dst: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_DB_FILE }}"
+
+- name: Copy SSH keys
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dst }}"
+    owner: oxidized
+    group: oxidized
+    mode: u=rwx,g=,o=
+  loop:
+    - src: "{{ OXIDIZED_GIT_PUBLIC_KEY_TEMPLATE }}"
+      dst: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PUBLIC_KEY_FILE }}"
+    - src: "{{ OXIDIZED_GIT_PRIVATE_KEY_TEMPLATE }}"
+      dst: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PRIVATE_KEY_FILE }}"
+
+- name: Copy models
+  copy:
+    src: "{{ OXIDIZED_IMPORT_MODEL_LOCAL_PATH }}"
+    dest: "{{ OXIDIZED_IMPORT_MODEL_PATH }}"
+    owner: oxidized
+    group: oxidized
+    mode: u=rwx,g=,o=
+  when: OXIDIZED_IMPORT_MODEL_LOCAL_PATH is defined
+
+- name: Clone backup repository
+  git:
+    dest: "{{ OXIDIZED_GIT_LOCAL_REPO }}"
+    key_file: "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PRIVATE_KEY_FILE }}"
+    repo: "{{ OXIDIZED_GIT_REMOTE_REPO }}"
+    update: no
+    accept_hostkey: true
+
+- name: "Create the oxidized container."
+  docker_container:
+    recreate: true
+    name: oxidized
+    hostname: oxidized
+    image: oxidized/oxidized:latest
+    restart_policy: always
+    dns_servers: "{{ OXIDIZED_DNS }}"
+    ports:
+      - "{{ OXIDIZED_LISTEN }}:{{ OXIDIZED_LISTEN_PORT }}"
+    volumes:
+      - "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_CONFIG_FILE }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/config:ro"
+      - "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_DB_FILE }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/equipments.csv:ro"
+      - "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PUBLIC_KEY_FILE }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/id_git.pub:ro"
+      - "{{ OXIDIZED_CONFIG_PATH }}/{{ OXIDIZED_GIT_PRIVATE_KEY_FILE }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/id_git:ro"
+      - "{{ OXIDIZED_IMPORT_MODEL_PATH }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/model:ro"
+      - "{{ OXIDIZED_GIT_LOCAL_REPO }}:{{ OXIDIZED_CONTAINER_CONFIG_PATH }}/repo:rw"
+  tags: molecule-notest
+  become: true
