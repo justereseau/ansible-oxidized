@@ -1,1 +1,61 @@
 ---
+# Can be an array
+OXIDIZED_DNS: 1.1.1.1
+
+OXIDIZED_RESOLVE_DNS: true
+OXIDIZED_INTERVAL: 3600
+OXIDIZED_USE_SYSLOG: true
+OXIDIZED_THREADS: 30
+OXIDIZED_TIMEOUT: 20
+OXIDIZED_RETRIES: 3
+OXIDIZED_PROMPT: '!ruby/regexp /^([\w.@-]+[#>]\s?)$/'
+OXIDIZED_LISTEN: 0.0.0.0:8888
+OXIDIZED_NEXT_ADDS_JOB: true
+
+OXIDIZED_SLACK_TOKEN: xoxb-123456123456
+OXIDIZED_SLACK_CHANNEL: "#your-channel"
+OXIDIZED_SLACK_COMMIT_URL: https://github.com/justereseau/network-configuration/commit/
+
+OXIDIZED_SECURE_SSH: true
+
+OXIDIZED_CONFIG_PATH: /opt/oxidized
+
+OXIDIZED_CONFIG_TEMPLATE: config.yml.j2
+OXIDIZED_CONFIG_FILE: config.yml
+
+OXIDIZED_DB_TEMPLATE: equipments.csv.j2
+OXIDIZED_DB_FILE: equipments.csv
+
+OXIDIZED_GIT_USER: Oxidized
+OXIDIZED_GIT_EMAIL: oxidized@justereseau.ca
+OXIDIZED_GIT_LOCAL_REPO: "{{ OXIDIZED_CONFIG_PATH }}/repo"
+OXIDIZED_GIT_REMOTE_REPO: git@github.com:justereseau/network-configuration.git
+OXIDIZED_GIT_PRIVATE_KEY_TEMPLATE: local/path/to/key
+OXIDIZED_GIT_PRIVATE_KEY_FILE: id_git
+OXIDIZED_GIT_PUBLIC_KEY_TEMPLATE: local/path/to/key.pub
+OXIDIZED_GIT_PUBLIC_KEY_FILE: id_git.pub
+
+OXIDIZED_HIDE_SECRETS: true
+
+OXIDIZED_EQUIPMENTS:
+  - NAME: sw01.infra.example.com
+    IP: 10.0.0.1
+    MODEL: ios
+    USERNAME: oxidized
+    PASSWORD: oxidized
+  - NAME: sw02.infra.example.com
+    IP: 10.0.0.2
+    MODEL: junos
+    USERNAME: oxidized
+    PASSWORD: oxidized
+  - NAME: sw02.infra.example.com
+    IP: 10.0.0.3
+    MODEL: tplink
+    USERNAME: oxidized
+    PASSWORD: oxidized
+
+# OXIDIZED_IMPORT_MODEL_LOCAL_PATH: "local/path/to/models"
+OXIDIZED_IMPORT_MODEL_PATH: "{{ OXIDIZED_CONFIG_PATH }}/models"
+OXIDIZED_IMPORT_MODEL:
+  - NAME: tplink
+    FILE: tplink.rb

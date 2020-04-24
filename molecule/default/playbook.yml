@@ -8,7 +8,7 @@
     pip_install_packages:
       - docker-compose
       - docker
-  
+
   pre_tasks:
     - name: Update apt cache.
       apt: update_cache=yes
