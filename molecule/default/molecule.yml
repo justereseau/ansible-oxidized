@@ -19,7 +19,7 @@ provisioner:
   name: ansible
   lint: ansible-lint
   playbooks:
-    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+    converge: playbook.yml
 scenario:
   name: default
   test_sequence:
