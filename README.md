@@ -1,4 +1,4 @@
-# Ansible Role: Oxidized [![Build Status](https://travis-ci.org/lucasmaurice/ansible-role-oxidized.svg?branch=master)](https://travis-ci.org/lucasmaurice/ansible-role-oxidized) 
+# Ansible Role: Oxidized [![Build Status](https://travis-ci.org/justereseau/ansible-oxidized.svg?branch=master)](https://travis-ci.org/justereseau/ansible-oxidized)
 
 This role deploy [Oxidized](https://github.com/ytti/oxidized#index) on a **Debian** or a **RedHat** host.
 
